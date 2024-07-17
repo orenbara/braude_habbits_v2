@@ -1,3 +1,5 @@
+// src/components/LoginPage.jsx
+
 import React, { useState } from "react";
 import DarkModeToggle from "./DarkModeToggle";
 
@@ -9,8 +11,21 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
     setIsDarkMode(isDarkMode);
   };
 
-  const handleSubmit = (info) => {
-    onLogin();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch('http://localhost:3001/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: username, password }),    });
+
+    if (response.ok) {
+      onLogin();
+    } else {
+      console.error('Login failed');
+    }
   };
 
   return (
