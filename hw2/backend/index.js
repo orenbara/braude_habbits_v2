@@ -15,7 +15,7 @@ app.use(cors());
 
 
 
-const serviceAccount = require('../config/braude-web-project-firebase-adminsdk-t9wax-3235a7cc62.json'); // Path to your service account key
+const serviceAccount = require('../config/braude-web-project-firebase-adminsdk-t9wax-cf6e470977.json'); // Path to your service account key
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
