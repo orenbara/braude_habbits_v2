@@ -10,6 +10,7 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentView, setCurrentView] = useState(location.pathname.replace('/',''));
     const [isDarkMode, setIsDarkMode] = useState(false);
+    
     const setView = (view) => {
         history.pushState({urlPath: `/${view}`}, "", `/${view}`)
         setCurrentView(view);

@@ -12,9 +12,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-
-
-
 const serviceAccount = require('../config/braude-web-project-firebase-adminsdk-t9wax-cf6e470977.json'); // Path to your service account key
 
 admin.initializeApp({
@@ -46,19 +43,64 @@ app.post('/signup', async (req, res) => {
   });
   
   // Login endpoint
+  // app.post('/login', async (req, res) => {
+  //   const { email, password } = req.body;
+  
+  //   try {
+  //     const userRecord = await admin.auth().getUserByEmail(email);
+  
+  //     // Perform password validation (firebase-admin does not directly validate passwords)
+  //     // For demonstration purposes, assume the password is correct if user exists
+  //     res.status(200).send('User logged in successfully');
+  //   } catch (error) {
+  //     res.status(400).send('Error logging in: ' + error.message);
+  //   }
+  // });
+  // User login endpoint
   app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-  
+    
     try {
-      const userRecord = await admin.auth().getUserByEmail(email);
-  
-      // Perform password validation (firebase-admin does not directly validate passwords)
-      // For demonstration purposes, assume the password is correct if user exists
-      res.status(200).send('User logged in successfully');
+      const user = await admin.auth().getUserByEmail(email);
+
+      // Perform password validation (you can implement this using custom claims or external database)
+      if (user.password === password) {
+        // Generate a custom token for the user
+        console.log(`password is good`);
+        const token = await admin.auth().createCustomToken(user.uid);
+        res.status(200).json({ token });
+      } else {
+        console.log(`password is bad`);
+        res.status(401).send('Invalid credentials');
+      }
     } catch (error) {
       res.status(400).send('Error logging in: ' + error.message);
     }
   });
+
+
+  app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    
+    try {
+      const user = await admin.auth().getUserByEmail(email);
+
+      // Perform password validation (you can implement this using custom claims or external database)
+      if (user.password === password) {
+        // Generate a custom token for the user
+        console.log(`password is good`);
+        const token = await admin.auth().createCustomToken(user.uid);
+        res.status(200).json({ token });
+      } else {
+        console.log(`password is bad`);
+        res.status(401).send('Invalid credentials');
+      }
+    } catch (error) {
+      res.status(400).send('Error logging in: ' + error.message);
+    }
+  });
+
+  
   
 
 app.listen(port, () => {

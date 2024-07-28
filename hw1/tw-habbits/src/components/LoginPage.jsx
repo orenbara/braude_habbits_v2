@@ -2,31 +2,60 @@
 
 import React, { useState } from "react";
 import DarkModeToggle from "./DarkModeToggle";
+import { auth } from '../firebase/config.js';
+import {  signInWithEmailAndPassword } from "firebase/auth";
+
 
 const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  
+
+  
+
   const toggleDarkMode = (isDarkMode) => {
     setIsDarkMode(isDarkMode);
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const response = await fetch('http://localhost:3001/login', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ email: username, password }),    });
+
+  //   if (response.ok) {
+  //     onLogin();
+  //   } else {
+  //     console.error('Login failed');
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response = await fetch('http://localhost:3001/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: username, password }),    });
-
-    if (response.ok) {
+    console.log(username)
+    console.log(password)
+    signInWithEmailAndPassword(auth, username, password)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      console.log("SUCCESS!!!!!!!!!")
+      console.log(user)
       onLogin();
-    } else {
-      console.error('Login failed');
-    }
+      // ...
+    })
+    .catch((error) => {
+      console.log("FAIL!!!!!!!!!")
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorMessage)
+    });
   };
+
 
   return (
     <div
