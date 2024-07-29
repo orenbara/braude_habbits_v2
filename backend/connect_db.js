@@ -10,7 +10,7 @@ const createSecretFile = () => {
   const secretFileContent = Buffer.from(secretFileBase64, 'base64');
 
   // Define the path where you want to save the secret file
-  const secretFilePath = path.join(__dirname, '../config/secret_firebase_base64.txt');
+  const secretFilePath = path.join(__dirname, '../config/secret_firebase_base64.json');
 
   // Write the decoded content to a file
   fs.writeFileSync(secretFilePath, secretFileContent);
