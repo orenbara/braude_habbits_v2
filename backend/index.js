@@ -12,7 +12,7 @@ app.get('/backend_db_test', async (req, res) => {
   res.send('HELLO TESTER, CHECK YOUR DB');
   const peopleRef = db.collection('people').doc('OREN :)')
   const res2 = await peopleRef.set({
-    ["backend_db_test"]: "Added this value yey!!"
+    ["backend_db_test"]: "Added this value yey!! from vercel!!!"
   })
 });
 
