@@ -6,3 +6,6 @@ frontend/tw-habbits/node_modules
 backend/node_modules
 frontend/package-lock.json
 backend/package-lock.json
+config/secret_firebase_base64.txt
+config/secret_firebase_base64.json
+

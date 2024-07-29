@@ -1,3 +1,10 @@
+// Import the function to create the secret file
+const createSecretFile = require('./connect_db');
+
+// Call the function to create the secret file
+createSecretFile();
+
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
@@ -12,7 +19,11 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-const serviceAccount = require('../config/braude-web-project-firebase-adminsdk-t9wax-cf6e470977.json'); // Path to your service account key
+
+//const serviceAccount = require('../config/braude-web-project-firebase-adminsdk-t9wax-cf6e470977.json'); // Path to your service account key
+//const admin = require('firebase-admin');
+const serviceAccount = require('../config/secret_firebase_base64.json');
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
