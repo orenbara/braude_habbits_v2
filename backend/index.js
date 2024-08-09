@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const port = process.env.PORT || 3000;
 const {db} = require('./firebase.js')
 
+// Enable CORS for all routes
+app.use(cors());
 
 // Define a route handler for the default home page
 app.get('/', (req, res) => {
