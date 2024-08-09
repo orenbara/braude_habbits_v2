@@ -25,6 +25,16 @@ app.get('/backend_db_test2', async (req, res) => {
   })
 });
 
+
+app.get('/backend_db_test3', async (req, res) => {
+  res.send('HELLO TESTER, CHECK YOUR DB 3333');
+  const peopleRef = db.collection('people').doc('Anna')
+  const res2 = await peopleRef.set({
+    ["key3"]: "anna valuie 3"
+  })
+});
+
+
 // Start the Express server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
