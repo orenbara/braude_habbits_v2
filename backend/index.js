@@ -100,9 +100,12 @@ app.get('/add_habit', async (req, res) => {
 app.get('/add_event_to_habit', async (req, res) => {
   console.log('I am in add_event');
 
-  const { id, habitName, event } = req.query;
+  const { id, habitName, habitEvent } = req.query;
+  //const id = "337889125";
+  //habitName = "Swimming";
+  //habitEvent = "10.08.2024";
 
-  if (!id || !habitName || !event) {
+  if (!id || !habitName || !habitEvent) {
     return res.status(400).send('ID, habit name, and event are required');
   }
 
@@ -122,7 +125,7 @@ app.get('/add_event_to_habit', async (req, res) => {
     }
 
     // Add the new event to the habit's events array
-    habitData.events.push(event);
+    habitData.events.push(habitEvent);
 
     // Update the habit with the new event in Firestore
     await userRef.update({
@@ -135,7 +138,6 @@ app.get('/add_event_to_habit', async (req, res) => {
     res.status(500).send('Error adding event');
   }
 });
-
 
 // Endpoint for getting user's personal data
 // endpoint should get user's id
