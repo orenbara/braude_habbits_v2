@@ -10,11 +10,8 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  
-
-  
-
   const toggleDarkMode = (isDarkMode) => {
+    localStorage.setItem("isDarkMode", isDarkMode);
     setIsDarkMode(isDarkMode);
   };
 
@@ -65,7 +62,7 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
     >
       <main className="flex-grow p-6 ">
         <header className="flex justify-end mb-6">
-          <DarkModeToggle onToggle={toggleDarkMode} mode={isDarkMode} />
+          <DarkModeToggle onToggle={toggleDarkMode} /*mode={isDarkMode}*/ />
         </header>
         <form
           onSubmit={handleSubmit}
@@ -75,10 +72,10 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
               : "bg-white text-gray-900 shadow-md"
           }`}
         >
-          <h1 className="text-2xl font-bold mb-2">
+          <h1 className="text-2xl font-bold mb-2 text-center">
             Welcome to TBD habit tracker!
           </h1>
-          <h2 className="text-2xl font-bold mb-2">Please login</h2>
+          <h2 className="text-2xl font-bold mb-2 text-center">Please login</h2>
           <input
             type="text"
             placeholder="Username"

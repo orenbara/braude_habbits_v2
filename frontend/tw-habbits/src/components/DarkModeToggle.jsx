@@ -4,10 +4,17 @@ Dark Mode Toggle Component
 This component provides a toggle button for switching between light and dark modes.
 It uses React's useState hook to manage the current mode state internally.
 */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const DarkModeToggle = ({ onToggle }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+    const storedDarkMode = localStorage.getItem("isDarkMode");
+    if (storedDarkMode === "true") {
+      setIsDarkMode(true);
+    }
+  }, []);
+
+  const [isDarkMode, setIsDarkMode] = useState();
 
   const toggleMode = () => {
     setIsDarkMode((prevMode) => !prevMode);
