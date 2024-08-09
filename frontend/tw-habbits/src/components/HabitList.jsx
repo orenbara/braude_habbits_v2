@@ -20,7 +20,42 @@ const HabitList = () => {
                         Build Good Habits!
                     </h2>
 
-                    <button onClick={() => setModalOpen(true)}
+                    <button 
+                        onClick={() => {
+                            setModalOpen(true)
+                            console.log("sdfsfdsdf")
+                            ;
+                            fetch('https://braude-habbits-v2-hksm.vercel.app/add_habit?id=337889109&habitName=swimming')
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('Fetch successful');
+                    
+                                    return fetch('https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=337889109');
+                                } else {
+                                    throw new Error('Network response was not ok');
+                                }
+                            })
+                            .then(response2 => {
+                                if (response2.ok) {
+                                    return response2.json();
+                                } else {
+                                    throw new Error('Failed to fetch user habits');
+                                }
+                            })
+                            .then(data => {
+                                // Access the habits from the parsed JSON data
+                                const newHabitList = data.habits.map((habit, index) => ({
+                                    key: index + 1,
+                                    title: habit, // Assuming habit is a string, adjust if it's an object
+                                    color: '#53e384' // Use a default color or adjust as needed
+                                }));
+                                setHabitList(newHabitList);
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        
+                        }}
                             className="flex items-center gap-3 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
                         <svg className="fill-white"
                              xmlns="http://www.w3.org/2000/svg"
