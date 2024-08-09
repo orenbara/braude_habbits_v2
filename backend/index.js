@@ -14,7 +14,7 @@ app.get('/backend_db_test', async (req, res) => {
   const res2 = await peopleRef.set({
     ["backend_db_test"]: "Added this value yey!! from vercel!!!"
   })
-  console.log(res2)
+  res.send(res2);
 });
 
 
@@ -24,7 +24,7 @@ app.get('/backend_db_test2', async (req, res) => {
   const res2 = await peopleRef.set({
     ["backend_db_test"]: "Added this value yey!! from vercel!!! 222222"
   })
-  console.log(res2)
+  res.send(res2);
 });
 
 
@@ -34,7 +34,7 @@ app.get('/backend_db_test3', async (req, res) => {
   const res2 = await peopleRef.set({
     ["backend_db_test"]: "anna valuie 3"
   })
-  console.log(res2)
+  res.send(res2);
 });
 
 
