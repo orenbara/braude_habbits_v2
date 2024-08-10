@@ -9,6 +9,7 @@ import {  signInWithEmailAndPassword } from "firebase/auth";
 const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [userID, setUserID] = useState(false);
 
   const toggleDarkMode = (isDarkMode) => {
     localStorage.setItem("isDarkMode", isDarkMode);
@@ -40,7 +41,8 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
-      console.log(user.uid)
+      setUserID(user.uid);
+      localStorage.setItem("userID", user.uid);
       console.log("SUCCESS!!!!!!!!!")
       console.log(user)
       onLogin();
