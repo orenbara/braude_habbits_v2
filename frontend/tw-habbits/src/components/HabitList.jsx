@@ -1,15 +1,54 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import HabitListItem from "./HabitListItem.jsx";
 import Modal from "./Modal.jsx";
 
 const HabitList = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [habitList, setHabitList] = useState([
-        {key: 1, title: 'Take out the trash', color: '#53e384'},
-        {key: 2, title: 'Stretch', color: 'orange'},
-        {key: 3, title: 'Brush teeth', color: '#4baffe'},
-        {key: 4, title: 'Walk', color: '#eb4a52'},
-    ]);
+    const [habitList, setHabitList] = useState([]);
+
+    // Function to fetch habits
+    const fetchHabits = () => {
+        fetch(`http://localhost:3000/get_user_habits?id=${localStorage.getItem("userID")}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch user habits');
+                }
+            })
+            .then(data => {
+                // Check if the habits object exists and has any habits
+                if (data.habits && Object.keys(data.habits).length > 0) {
+                    const newHabitList = Object.keys(data.habits).map((habitName, index) => ({
+                        key: index + 1,                      // Unique key for each habit
+                        title: data.habits[habitName].name,  // Get the habit name
+                        color: data.habits[habitName].color, // Get the habit color
+                        events: data.habits[habitName].events // Get the habit events
+                    }));
+                    console.log("New habit list = ", newHabitList);
+                    setHabitList(newHabitList);
+                } else {
+                    // If no habits are found, set an empty list
+                    setHabitList([]);
+                    console.log("No habits found in the database");
+                }
+            })
+            .catch(error => {
+                console.log('Error:', error);
+            });
+    };
+    
+    useEffect(() => {
+        fetchHabits();
+    }, []);
+
+    // Function to handle habit submission
+    const handleHabitSubmit = (newHabit) => {
+        setHabitList([...habitList, newHabit]);
+        setModalOpen(false);
+        fetchHabits();
+    };
+
 
     return (
         <div className="mx-auto py-6 sm:px-6 lg:px-8 dark:bg-slate-900">
@@ -21,7 +60,10 @@ const HabitList = () => {
                     </h2>
 
                     <button 
-                        onClick={() => setModalOpen(true)}
+                        onClick={() => {
+                            setModalOpen(true)
+                        
+                        }}
                             className="flex items-center gap-3 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
                         <svg className="fill-white"
                              xmlns="http://www.w3.org/2000/svg"
@@ -39,36 +81,7 @@ const HabitList = () => {
                     {habitList.map((item) => <HabitListItem {...item}/>)}
                 </div>
 
-                <Modal inputs={['title','color']} title="Add a habit" isOpen={modalOpen} close={() => setModalOpen(false)} onSubmit={ fetch('https://braude-habbits-v2-hksm.vercel.app/add_habit?id=337889109&habitName=swimming')
-                            .then(response => {
-                                if (response.ok) {
-                                    console.log('Fetch successful');
-                    
-                                    return fetch('https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=337889109');
-                                } else {
-                                    throw new Error('Network response was not ok');
-                                }
-                            })
-                            .then(response2 => {
-                                if (response2.ok) {
-                                    return response2.json();
-                                } else {
-                                    throw new Error('Failed to fetch user habits');
-                                }
-                            })
-                            .then(data => {
-                                // Access the habits from the parsed JSON data
-                                const newHabitList = data.habits.map((habit, index) => ({
-                                    key: index + 1,
-                                    title: habit, // Assuming habit is a string, adjust if it's an object
-                                    color: '#53e384' // Use a default color or adjust as needed
-                                }));
-                                setHabitList(newHabitList);
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                            })
-                 }>
+                <Modal inputs={['title','color']} title="Add a habit" isOpen={modalOpen} close={() => setModalOpen(false)} onSubmit={data => handleHabitSubmit(data)}>
                     <label className="block text-black text-sm font-bold mb-1">
                         Habit:
                     </label>

@@ -40,6 +40,7 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
+      console.log(user.uid)
       console.log("SUCCESS!!!!!!!!!")
       console.log(user)
       onLogin();

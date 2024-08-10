@@ -60,11 +60,11 @@ app.get('/add_user', async (req, res) => {
 app.get('/add_habit', async (req, res) => {
   console.log('I am in add_habit');
 
-  const {id, habitName} = req.query;
+  const {id, habitName, color} = req.query;
   //const id = "337889125";
   //const habitName = "Climbing";
 
-  if (!id || !habitName) {
+  if (!id || !habitName || !color) {
     return res.status(400).send('ID and habit name are required');
   }
 
@@ -76,6 +76,7 @@ app.get('/add_habit', async (req, res) => {
     // Create a structure for the habit with an empty list of events
     const newHabit = {
       name: habitName,
+      color: color,
       events: [] // Empty list of habit events
     };
 
@@ -168,7 +169,7 @@ app.get('/get_user_personal_data', async (req, res) => {
   }
 });
 
-// Endpoint for getting user's habit list:
+// Endpoint for getting user's habits:
 // endpoint should get user's id
 app.get('/get_user_habits', async (req, res) => {
   console.log('I am in get_user_habits');
@@ -189,11 +190,8 @@ app.get('/get_user_habits', async (req, res) => {
 
     const userHabitsData = userHabitsDoc.data();
 
-    // Extract habit names from the document's fields
-    const habitList = Object.keys(userHabitsData);
-
-    console.log('User habits:', habitList);
-    res.json({ habits: habitList });
+    console.log('User habits:', userHabitsData);
+    res.json({ habits: userHabitsData });
   } catch (error) {
     console.error("Error retrieving user's habits: ", error);
     res.status(500).send('Error retrieving habits');

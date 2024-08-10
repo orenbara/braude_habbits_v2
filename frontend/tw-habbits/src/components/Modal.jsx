@@ -1,6 +1,5 @@
 import React from "react";
 
-
 const Modal = ({isOpen, close, inputs, title, width = 300, onSubmit, children}) => {
     const handleBackgroundClickClose = (event) =>
         event.target.classList.contains('modal') && close();
@@ -16,7 +15,27 @@ const Modal = ({isOpen, close, inputs, title, width = 300, onSubmit, children}) 
                         for (const input of inputs) {
                             data[input] = formData.get(input);
                         }
-                        onSubmit(data, event);
+                        console.log("Debug: data = ", data)
+
+                        fetch(`http://localhost:3000/add_habit?id=${localStorage.getItem("userID")}&habitName=${encodeURIComponent(data['title'])}&color=${encodeURIComponent(data['color'])}`)
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Fetch successful');
+                                
+                                return fetch(`http://localhost:3000/get_user_habits?id=${localStorage.getItem("userID")}`);
+                            } else {
+                                throw new Error('Network response was not ok');
+                            }
+                        })
+                        .then(response2 => response2.json())
+                        .then(updatedHabits => {
+                            onSubmit(updatedHabits);
+                            close();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
                         close();
                     }} className="relative w-auto my-6 mx-auto " style={{width}}>
                         <div
