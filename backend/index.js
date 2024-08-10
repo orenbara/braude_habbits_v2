@@ -144,6 +144,52 @@ app.get('/add_event_to_habit', async (req, res) => {
   }
 });
 
+// Endpoint adding event for specific habig
+// // endpoint should get user's id, habit name and event(date)
+app.get('/delete_event_from_habit', async (req, res) => {
+  console.log('I am in delete_event_from_habit');
+
+  const { id, habitName, eventDate } = req.query;
+
+  if (!id || !habitName || !eventDate) {
+    return res.status(400).send('ID, habit name, and event date are required');
+  }
+
+  try {
+    // Reference to the user's document
+    const userRef = db.collection('users_habits').doc(id);
+    const userDoc = await userRef.get();
+
+    // Check if the user document exists
+    if (!userDoc.exists) {
+      return res.status(404).send('User not found');
+    }
+
+    const userData = userDoc.data();
+
+    // Check if the habit exists in the user's document
+    if (!userData[habitName]) {
+      return res.status(404).send('Habit not found');
+    }
+
+    const habit = userData[habitName];
+
+    // Filter out the event to be deleted
+    const updatedEvents = habit.events.filter(event => event !== eventDate);
+
+    // Update the habit with the new list of events
+    await userRef.update({
+      [`${habitName}.events`]: updatedEvents
+    });
+
+    res.status(200).send('Event deleted successfully');
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    res.status(500).send('Error deleting event');
+  }
+});
+
+
 // Endpoint for getting user's personal data
 // endpoint should get user's id
 app.get('/get_user_personal_data', async (req, res) => {
