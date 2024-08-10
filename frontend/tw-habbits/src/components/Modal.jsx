@@ -17,12 +17,12 @@ const Modal = ({isOpen, close, inputs, title, width = 300, onSubmit, children}) 
                         }
                         console.log("Debug: data = ", data)
 
-                        fetch(`http://localhost:3000/add_habit?id=${localStorage.getItem("userID")}&habitName=${encodeURIComponent(data['title'])}&color=${encodeURIComponent(data['color'])}`)
+                        fetch(`https://braude-habbits-v2-hksm.vercel.app/add_habit?id=${localStorage.getItem("userID")}&habitName=${encodeURIComponent(data['title'])}&color=${encodeURIComponent(data['color'])}`)
                         .then(response => {
                             if (response.ok) {
                                 console.log('Fetch successful');
                                 
-                                return fetch(`http://localhost:3000/get_user_habits?id=${localStorage.getItem("userID")}`);
+                                return fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${localStorage.getItem("userID")}`);
                             } else {
                                 throw new Error('Network response was not ok');
                             }

@@ -8,7 +8,7 @@ const HabitList = () => {
 
     // Function to fetch habits
     const fetchHabits = () => {
-        fetch(`http://localhost:3000/get_user_habits?id=${localStorage.getItem("userID")}`)
+        fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${localStorage.getItem("userID")}`)
             .then(response => {
                 if (response.ok) {
                     return response.json();
