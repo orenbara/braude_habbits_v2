@@ -3,11 +3,12 @@ import MonthNavigator from './MonthNavigator.jsx';
 import Calendar from './Calendar.jsx';
 import FriendSelector from './FriendSelector.jsx';
 
-const friends = [
+/*const friends = [
   { id: 1, name: 'Alice' },
   { id: 2, name: 'Bob' },
   { id: 3, name: 'Charlie' },
-];
+  
+];*/
 
 const getDatesArr = (year, month) => {
   // Adjust month to be 0-based, as JavaScript Date object uses 0 for January
@@ -26,28 +27,26 @@ const getDatesArr = (year, month) => {
       //console.log("ORENTEST", date.toISOString().split('T')[0])
       monthDates.push(date.toISOString().split('T')[0]); // Format the date as YYYY-MM-DD
       //console.log("Formatted Date:", date.toISOString().split('T')[0]);
-      
   }
-  //console.log("monthDates", monthDates)
-  //console.log("Generated monthDates in getDatesArr", monthDates);
   return monthDates
-  //setDatesArr(monthDates)
-  //console.log("datesArr", datesArr)
 };
 
 
 const HabitTracker = () => {
   const [habitList, setHabitList] = useState([]);
+  const [selectedFriendHabitList, setSelectedFriendHabitList] = useState([]);
+  const [friendsList, setFriendsList] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedFriend, setSelectedFriend] = useState(null);
-  const [userCalendar, setUserCalendar] = useState({});
-  const [friendCalendar] = useState({});
-  const [selectedHabit, setSelectedHabit] = useState('Chose a habit');
+  const [userID] = useState(localStorage.getItem("userID"));
+  const [friendID, setFriendID] = useState({});
+  const [selectedHabit, setSelectedHabit] = useState({ title: 'Choose a habit' });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [datesArr, setDatesArr] = useState(getDatesArr(currentMonth.getFullYear(), currentMonth.getMonth()))
 
-  const fetchHabits = () => {
-    fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${localStorage.getItem("userID")}`)
+  // Fetch user's habits
+  const fetchHabits = (id) => {
+    fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${id}`)
       .then(response => {
         if (response.ok) {
           return response.json();
@@ -63,9 +62,20 @@ const HabitTracker = () => {
             color: data.habits[habitName].color,
             events: data.habits[habitName].events
           }));
-          setHabitList(newHabitList);
+          if(id === localStorage.getItem("userID")) {
+            setHabitList(newHabitList);
+          } else {
+            console.log("Friends's fetch", newHabitList)
+            setSelectedFriendHabitList(newHabitList);
+          }
+          
         } else {
-          setHabitList([]);
+          if(id === localStorage.getItem("userID")) {
+            setHabitList([]);
+          } else {
+            setSelectedFriendHabitList([]);
+          }
+          
         }
       })
       .catch(error => {
@@ -73,28 +83,85 @@ const HabitTracker = () => {
       });
   };
 
+  // Fetch user's friends
+  const fetchFriends = () => {
+    fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${localStorage.getItem("userID")}`)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Failed to fetch user friends');
+      }
+    })
+    .then(data => {
+      // Assuming data.friends is an array of friend objects
+      console.log("Friends data = ", data)
+      console.log("Friends data.friends = ", data.friends)
+      
+      if (data && data.friends && Array.isArray(data.friends)) {
+        console.log("IFFFFFFFF")
+        //let index = 0;
 
+        const newFriendsList = [];
+        /*data.friends.map((friendName, index) => ({
+          id: index + 1, 
+          name: friendName
+        }));*/
+
+        data.friends.forEach((friendID, index) => {
+          fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${friendID}`)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Failed to fetch user friends');
+            }
+          })
+          .then(data2 => {
+            if (data2) {
+              //console.log("see friendID = ", friendID)
+              //console.log("string = ", typeof friendID)
+              const friend = {
+                id: friendID,
+                name: data2.name + " " + data2.surname
+              }
+              newFriendsList.push(friend);
+              
+            }
+          })
+          .catch(error => {
+            console.log('Error:', error);
+          });
+
+        });
+  
+        console.log("NewFriendsList = ", newFriendsList)
+        setFriendsList(newFriendsList);
+      } else {
+        setFriendsList([]);
+      }
+    })
+    .catch(error => {
+      console.log('Error:', error);
+    });
+
+  }
 
   useEffect(() => {
-    //const curr = new Date();
-    //const year = curr.getUTCFullYear();
-    //const month = curr.getUTCMonth(); 
-    fetchHabits();
+    console.log("I an in use effect selectedFriendHabitList: ", selectedFriendHabitList)
+  }, [selectedFriendHabitList]);
+
+  useEffect(() => {
+    fetchHabits(localStorage.getItem("userID"));
+    fetchFriends();
   }, []);
 
-  // useEffect(() => {
-  //   console.log("datesArr",datesArr)
-  // }, [datesArr]);
- 
-
-  // useEffect(() => {
-  //   const year = currentMonth.getUTCFullYear();
-  //   const month = currentMonth.getUTCMonth(); // Add 1 because getUTCMonth is zero-based
-  //   //getDatesArr(year, month);
-  //   fetchHabits();
-  // }, [currentMonth]); // Runs whenever currentMonth changes
-
-
+  useEffect(() => {
+    if (selectedFriend?.id) {
+      console.log(" I am in the if in use effect!")
+      fetchHabits(selectedFriend.id);
+    }
+  }, [selectedFriend]);
 
   const prevMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
@@ -128,7 +195,7 @@ const HabitTracker = () => {
           <h2 className="text-2xl font-semibold dark:text-white">{selectedHabit.title}</h2>
           <div className="relative">
             <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="text-black ml-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -156,7 +223,7 @@ const HabitTracker = () => {
               <Calendar
                 currentMonth={currentMonth}
                 currentYear={currentMonth.getFullYear()}
-                calendar={userCalendar}
+                id={userID}
                 isEditable={true}
                 onDayClick={toggleDayStatus}
                 events = {selectedHabit.events}
@@ -168,24 +235,31 @@ const HabitTracker = () => {
 
           <div>
             <FriendSelector
-              friends={friends}
+              friends={friendsList}
               selectedFriend={selectedFriend}
               onSelectFriend={setSelectedFriend}
             />
 
-            {selectedFriend && (
-              <div className="mt-8">
-                <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
-                <div className="max-w-md mx-auto">
+          {selectedFriend && selectedFriendHabitList.length > 0 && (
+            <div className="mt-8">
+              <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
+              <div className="max-w-md mx-auto">
+                {selectedFriendHabitList.map((habit) => (
                   <Calendar
+                    //key={habit.key} // Add a unique key if mapping over habits
                     currentMonth={currentMonth}
-                    calendar={friendCalendar}
+                    currentYear={currentMonth.getFullYear()}
+                    id={selectedFriend.id}
                     isEditable={false}
                     onDayClick={() => { }}
+                    events={habit.events}
+                    color={habit.color}
+                    title={habit.title}
                   />
-                </div>
+                ))}
               </div>
-            )}
+            </div>
+          )}
           </div>
         </div>
       </div>

@@ -10,7 +10,11 @@ const FriendSelector = ({ friends, selectedFriend, onSelectFriend }) => (
     <h4 className="text-lg font-semibold mb-2 dark:text-white">Friends</h4>
     <select 
       className="w-full p-2 border rounded dark:bg-slate-700 dark:text-white"
-      onChange={(e) => onSelectFriend(friends.find(f => f.id === parseInt(e.target.value)))}
+      onChange={(e) => {
+        console.log("Friends if FreindsSelector = ", friends)
+        console.log("The selected friend in FriendSelector = ",friends.find(f => f.id === e.target.value))
+        onSelectFriend(friends.find(f => f.id === e.target.value))
+      }}
       value={selectedFriend?.id || ''}
     >
       <option value="">Select a friend</option>
@@ -22,3 +26,5 @@ const FriendSelector = ({ friends, selectedFriend, onSelectFriend }) => (
 );
 
 export default FriendSelector;
+
+

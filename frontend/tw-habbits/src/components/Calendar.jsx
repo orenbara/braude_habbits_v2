@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const Calendar = ({ currentMonth, currentYear, calendar, isEditable, onDayClick, events, color, title }) => {
+const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, events, color, title }) => {
   const [markedDays, setMarkedDays] = useState({});
+
+  console.log("ID in Calendar = ", id)
+  console.log("Events in Calendar = ", events)
   
   useEffect(() => {
     // Function to update marked days based on events
@@ -23,14 +26,14 @@ const Calendar = ({ currentMonth, currentYear, calendar, isEditable, onDayClick,
     const date = new Date(currentYear, currentMonth.getMonth(), index+1).toISOString().split('T')[0];
     
     if (!isMarked) {
-      fetch(`https://braude-habbits-v2-hksm.vercel.app/add_event_to_habit?id=${localStorage.getItem("userID")}&habitName=${title}&habitEvent=${date}`)
+      fetch(`https://braude-habbits-v2-hksm.vercel.app/add_event_to_habit?id=${id}&habitName=${title}&habitEvent=${date}`)
         .then(response => {
           if (!response.ok) throw new Error('Failed to update event');
           console.log("Added event to DB");
         })
         .catch(error => console.error('Error updating event:', error));
     } else {
-      fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_event_from_habit?id=${localStorage.getItem("userID")}&habitName=${title}&eventDate=${date}`)
+      fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_event_from_habit?id=${id}&habitName=${title}&eventDate=${date}`)
         .then(response => {
           if (!response.ok) throw new Error('Failed to delete event');
           console.log("Deleted event from DB");
