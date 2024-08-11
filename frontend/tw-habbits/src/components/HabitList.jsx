@@ -82,16 +82,16 @@ const HabitList = () => {
                 </div>
 
                 <Modal inputs={['title','color']} title="Add a habit" isOpen={modalOpen} close={() => setModalOpen(false)} onSubmit={data => handleHabitSubmit(data)}>
-                    <label className="block text-black text-sm font-bold mb-1">
+                    <label className="block text-black text-sm font-bold mb-1 dark:text-white">
                         Habit:
                     </label>
                     <input name="title"
                         className="shadow appearance-none border rounded w-full py-2 px-1 text-black"/>
-                    <label className="block text-black text-sm font-bold mb-1 mt-4">
+                    <label className="block text-black text-sm font-bold mb-1 mt-4 dark:text-white">
                         Color
                     </label>
                     <input name="color" type="color"
-                           className="shadow appearance-none border rounded w-full"/>
+                           className="shadow appearance-none border rounded w-full dark:bg-purple-900 dark:border-purple-900"/>
                 </Modal>
             </div>
         </div>
