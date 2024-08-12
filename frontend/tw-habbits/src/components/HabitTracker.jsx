@@ -3,35 +3,6 @@ import MonthNavigator from './MonthNavigator.jsx';
 import Calendar from './Calendar.jsx';
 import FriendSelector from './FriendSelector.jsx';
 
-/*const friends = [
-  { id: 1, name: 'Alice' },
-  { id: 2, name: 'Bob' },
-  { id: 3, name: 'Charlie' },
-  
-];*/
-
-// const getDatesArr = (year, month) => {
-//   // Adjust month to be 0-based, as JavaScript Date object uses 0 for January
-//   //month = month - 1;
-
-//   // Get the first day of the month
-//   const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
-  
-//   // Get the last day of the month
-//   const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
-  
-//   // Generate all dates for the specified month and year
-//   const monthDates = [];
-//   for (let day = firstDayOfMonth.getUTCDate(); day <= lastDayOfMonth.getUTCDate(); day++) {
-//       const date = new Date(Date.UTC(year, month, day));
-//       //console.log("ORENTEST", date.toISOString().split('T')[0])
-//       monthDates.push(date.toISOString().split('T')[0]); // Format the date as YYYY-MM-DD
-//       //console.log("Formatted Date:", date.toISOString().split('T')[0]);
-//   }
-//   return monthDates
-// };
-
-
 const HabitTracker = () => {
   const [habitList, setHabitList] = useState([]);
   const [selectedFriendHabitList, setSelectedFriendHabitList] = useState([]);
@@ -173,13 +144,9 @@ const HabitTracker = () => {
     //setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1))
   };
 
-  const toggleDayStatus = (day) => {
-    /*setUserCalendar(prev => {
-      const currentStatus = prev[day] || 'default';
-      const newStatus = currentStatus === 'default' ? 'green' :
-        currentStatus === 'green' ? 'red' : 'default';
-      return { ...prev, [day]: newStatus };
-    });*/
+  const toggleDayStatus = (updatedList) => {
+    habitList.events = updatedList;
+    setHabitList(habitList);
 
   };
 

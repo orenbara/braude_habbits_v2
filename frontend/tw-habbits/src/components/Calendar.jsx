@@ -45,6 +45,10 @@ const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, event
       ...prevMarkedDays,
       [index]: !isMarked
     }));
+
+    events.push(date);
+
+    onDayClick(events);
   };
 
   return (
