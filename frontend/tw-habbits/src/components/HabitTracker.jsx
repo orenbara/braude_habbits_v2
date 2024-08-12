@@ -240,13 +240,16 @@ const HabitTracker = () => {
               onSelectFriend={setSelectedFriend}
             />
 
-          {selectedFriend && selectedFriendHabitList.length > 0 && (
-            <div className="mt-8">
-              <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
-              <div className="max-w-md mx-auto">
-                {selectedFriendHabitList.map((habit) => (
+      {selectedFriend && selectedFriendHabitList.length > 0 && (
+        <div className="mt-8">
+          <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
+          <div className="max-w-md mx-auto">
+            {selectedFriendHabitList.some(habit => habit.title === selectedHabit.title) ? (
+              selectedFriendHabitList
+                .filter(habit => habit.title === selectedHabit.title)
+                .map((habit) => (
                   <Calendar
-                    //key={habit.key} // Add a unique key if mapping over habits
+                    key={habit.title} // Use a unique key
                     currentMonth={currentMonth}
                     currentYear={currentMonth.getFullYear()}
                     id={selectedFriend.id}
@@ -256,10 +259,18 @@ const HabitTracker = () => {
                     color={habit.color}
                     title={habit.title}
                   />
-                ))}
-              </div>
-            </div>
-          )}
+                ))
+            ) : (
+              <p className="text-red-500">This habit is not found in {selectedFriend.name}'s habit list.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+
+
+
+
           </div>
         </div>
       </div>
