@@ -10,26 +10,26 @@ import FriendSelector from './FriendSelector.jsx';
   
 ];*/
 
-const getDatesArr = (year, month) => {
-  // Adjust month to be 0-based, as JavaScript Date object uses 0 for January
-  //month = month - 1;
+// const getDatesArr = (year, month) => {
+//   // Adjust month to be 0-based, as JavaScript Date object uses 0 for January
+//   //month = month - 1;
 
-  // Get the first day of the month
-  const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+//   // Get the first day of the month
+//   const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
   
-  // Get the last day of the month
-  const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+//   // Get the last day of the month
+//   const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
   
-  // Generate all dates for the specified month and year
-  const monthDates = [];
-  for (let day = firstDayOfMonth.getUTCDate(); day <= lastDayOfMonth.getUTCDate(); day++) {
-      const date = new Date(Date.UTC(year, month, day));
-      //console.log("ORENTEST", date.toISOString().split('T')[0])
-      monthDates.push(date.toISOString().split('T')[0]); // Format the date as YYYY-MM-DD
-      //console.log("Formatted Date:", date.toISOString().split('T')[0]);
-  }
-  return monthDates
-};
+//   // Generate all dates for the specified month and year
+//   const monthDates = [];
+//   for (let day = firstDayOfMonth.getUTCDate(); day <= lastDayOfMonth.getUTCDate(); day++) {
+//       const date = new Date(Date.UTC(year, month, day));
+//       //console.log("ORENTEST", date.toISOString().split('T')[0])
+//       monthDates.push(date.toISOString().split('T')[0]); // Format the date as YYYY-MM-DD
+//       //console.log("Formatted Date:", date.toISOString().split('T')[0]);
+//   }
+//   return monthDates
+// };
 
 
 const HabitTracker = () => {
@@ -42,7 +42,7 @@ const HabitTracker = () => {
   const [friendID, setFriendID] = useState({});
   const [selectedHabit, setSelectedHabit] = useState({ title: 'Choose a habit' });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [datesArr, setDatesArr] = useState(getDatesArr(currentMonth.getFullYear(), currentMonth.getMonth()))
+  //const [datesArr, setDatesArr] = useState(getDatesArr(currentMonth.getFullYear(), currentMonth.getMonth()))
 
   // Fetch user's habits
   const fetchHabits = (id) => {
@@ -65,7 +65,7 @@ const HabitTracker = () => {
           if(id === localStorage.getItem("userID")) {
             setHabitList(newHabitList);
           } else {
-            console.log("Friends's fetch", newHabitList)
+            //console.log("Friends's fetch", newHabitList)
             setSelectedFriendHabitList(newHabitList);
           }
           
@@ -95,11 +95,10 @@ const HabitTracker = () => {
     })
     .then(data => {
       // Assuming data.friends is an array of friend objects
-      console.log("Friends data = ", data)
-      console.log("Friends data.friends = ", data.friends)
+      //console.log("Friends data = ", data)
+      //console.log("Friends data.friends = ", data.friends)
       
       if (data && data.friends && Array.isArray(data.friends)) {
-        console.log("IFFFFFFFF")
         //let index = 0;
 
         const newFriendsList = [];
@@ -135,7 +134,7 @@ const HabitTracker = () => {
 
         });
   
-        console.log("NewFriendsList = ", newFriendsList)
+        //console.log("NewFriendsList = ", newFriendsList)
         setFriendsList(newFriendsList);
       } else {
         setFriendsList([]);
@@ -148,7 +147,7 @@ const HabitTracker = () => {
   }
 
   useEffect(() => {
-    console.log("I an in use effect selectedFriendHabitList: ", selectedFriendHabitList)
+    //console.log("I an in use effect selectedFriendHabitList: ", selectedFriendHabitList)
   }, [selectedFriendHabitList]);
 
   useEffect(() => {
@@ -158,19 +157,20 @@ const HabitTracker = () => {
 
   useEffect(() => {
     if (selectedFriend?.id) {
-      console.log(" I am in the if in use effect!")
+      //console.log(" I am in the if in use effect!")
       fetchHabits(selectedFriend.id);
     }
   }, [selectedFriend]);
 
+
   const prevMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-    setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1))
+    //setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1))
   };
 
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-    setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1))
+    //setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1))
   };
 
   const toggleDayStatus = (day) => {

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import HabitListItem from "./HabitListItem.jsx";
 import Modal from "./Modal.jsx";
 
@@ -6,7 +6,6 @@ const HabitList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [habitList, setHabitList] = useState([]);
 
-    // Function to fetch habits
     const fetchHabits = () => {
         fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${localStorage.getItem("userID")}`)
             .then(response => {
@@ -17,18 +16,15 @@ const HabitList = () => {
                 }
             })
             .then(data => {
-                // Check if the habits object exists and has any habits
                 if (data.habits && Object.keys(data.habits).length > 0) {
                     const newHabitList = Object.keys(data.habits).map((habitName, index) => ({
-                        key: index + 1,                      // Unique key for each habit
-                        title: data.habits[habitName].name,  // Get the habit name
-                        color: data.habits[habitName].color, // Get the habit color
-                        events: data.habits[habitName].events // Get the habit events
+                        key: index + 1,
+                        title: data.habits[habitName].name,
+                        color: data.habits[habitName].color,
+                        events: data.habits[habitName].events
                     }));
-                    console.log("New habit list = ", newHabitList);
                     setHabitList(newHabitList);
                 } else {
-                    // If no habits are found, set an empty list
                     setHabitList([]);
                     console.log("No habits found in the database");
                 }
@@ -37,34 +33,45 @@ const HabitList = () => {
                 console.log('Error:', error);
             });
     };
-    
+
     useEffect(() => {
         fetchHabits();
     }, []);
 
-    // Function to handle habit submission
     const handleHabitSubmit = (newHabit) => {
         setHabitList([...habitList, newHabit]);
         setModalOpen(false);
         fetchHabits();
     };
 
+    const handleDeleteHabit = (index) => {
+        const habitToDelete = habitList[index].title;  // Get the habit name from the habitList
+    
+        const updatedHabitList = habitList.filter((_, i) => i !== index);
+        setHabitList(updatedHabitList);
+    
+        fetch(`http://localhost:3000/delete_habit?id=${localStorage.getItem("userID")}&habitName=${habitToDelete}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete habit');
+                }
+                console.log("Deleted habit from DB");
+            })
+            .catch(error => {
+                console.error('Error deleting habit:', error);
+            });
+    };
 
     return (
         <div className="mx-auto py-6 sm:px-6 lg:px-8 dark:bg-slate-900">
             <div className="px-4 py-6 sm:px-0">
-
                 <div className="flex justify-between mt-4">
                     <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
                         Build Good Habits!
                     </h2>
-
                     <button 
-                        onClick={() => {
-                            setModalOpen(true)
-                        
-                        }}
-                            className="flex items-center gap-3 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                        onClick={() => setModalOpen(true)}
+                        className="flex items-center gap-3 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
                         <svg className="fill-white"
                              xmlns="http://www.w3.org/2000/svg"
                              width={20}
@@ -76,12 +83,21 @@ const HabitList = () => {
                         <span className="text-2xl">New Habit</span>
                     </button>
                 </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {habitList.map((item) => <HabitListItem {...item}/>)}
+                    {habitList.map((item, index) => (
+                        <HabitListItem 
+                            key={item.key} 
+                            {...item} 
+                            onDelete={() => handleDeleteHabit(index)} 
+                        />
+                    ))}
                 </div>
-
-                <Modal inputs={['title','color']} title="Add a habit" isOpen={modalOpen} close={() => setModalOpen(false)} onSubmit={data => handleHabitSubmit(data)}>
+                <Modal 
+                    inputs={['title','color']} 
+                    title="Add a habit" 
+                    isOpen={modalOpen} 
+                    close={() => setModalOpen(false)} 
+                    onSubmit={data => handleHabitSubmit(data)}>
                     <label className="block text-black text-sm font-bold mb-1 dark:text-white">
                         Habit:
                     </label>

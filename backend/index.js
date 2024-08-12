@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 
 const port = process.env.PORT || 3000;
-const {db} = require('./firebase.js')
+const { db, FieldValue } = require('./firebase.js');
 
 // Enable CORS for all routes
 app.use(cors());
@@ -144,6 +144,52 @@ app.get('/add_event_to_habit', async (req, res) => {
   }
 });
 
+
+// Endpoint for deleting a habit
+// endpoint should get user's id and habit name
+app.get('/delete_habit', async (req, res) => {
+  console.log('I am in del_habit');
+  
+  const { id, habitName } = req.query;
+  console.log(id, habitName);
+
+  if (!id || !habitName) {
+    return res.status(400).send('ID and habit name are required');
+  }
+
+  try {
+    // Reference to the user's document
+    const userRef = db.collection('users_habits').doc(id);
+    const userDoc = await userRef.get();
+
+    // Check if the user document exists
+    if (!userDoc.exists) {
+      console.error('[ERROR] userDoc is not in DB - userDoc.exists is false');
+      return res.status(404).send('User or habit not found');
+    }
+
+    const habitData = userDoc.data();
+    
+    // Check if the habit exists in the document
+    if (!habitData[habitName]) {
+      console.error('[ERROR] Habit not found in user document');
+      return res.status(404).send('Habit not found');
+    }
+
+    // Remove the habit from the document
+
+    await userRef.update({
+      [habitName]: FieldValue.delete()
+    });
+
+    console.log('Habit deleted successfully');
+    return res.status(200).send('Habit deleted successfully');
+    
+  } catch (error) {
+    console.error('[ERROR]: delete habit:', error);
+    return res.status(500).send('Error deleting habit');
+  }
+});
 // Endpoint adding event for specific habig
 // // endpoint should get user's id, habit name and event(date)
 app.get('/delete_event_from_habit', async (req, res) => {
