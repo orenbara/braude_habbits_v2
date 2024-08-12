@@ -50,7 +50,7 @@ const HabitList = () => {
         const updatedHabitList = habitList.filter((_, i) => i !== index);
         setHabitList(updatedHabitList);
     
-        fetch(`http://localhost:3000/delete_habit?id=${localStorage.getItem("userID")}&habitName=${habitToDelete}`)
+        fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_habit?id=${localStorage.getItem("userID")}&habitName=${habitToDelete}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to delete habit');
