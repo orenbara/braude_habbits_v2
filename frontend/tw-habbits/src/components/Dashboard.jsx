@@ -4,14 +4,15 @@ import BarChart from "./BarChart";
 import DashboardIntro from "./DashboardIntro";
 
 const Dashboard = ({ isDarkMode }) => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [userData, setUserData] = useState(null); // State to hold user data
+  const [loading, setLoading] = useState(true); // State to track loading status
+  const [error, setError] = useState(null); // State to track any error that occurs during data fetching
+  // State to hold competition data for friends
   const [competitionData, setCompetitionData] = useState({
     name: [],
     percentage: [],
   });
-  const [dailySuccessData, setDailySuccessData] = useState(null);
+  const [dailySuccessData, setDailySuccessData] = useState(null); // State to hold daily success data for the pie chart
 
   // Fetch user data
   const fetchUserData = () => {
@@ -60,13 +61,13 @@ const Dashboard = ({ isDarkMode }) => {
           if (data) {
             const habits = data.habits;
             const keys = Object.keys(habits);
-            const total = keys.length;
-            let active = 0;
-            const today = new Date().toISOString().split("T")[0];
+            const total = keys.length; // total number of habits
+            let active = 0; // actual preformed habbits
+            const today = new Date().toISOString().split("T")[0]; //get todays date using correct format
             keys.forEach((key) => {
-              if (habits[key].events.includes(today)) active++;
+              if (habits[key].events.includes(today)) active++; // count if habbit preformed today
             });
-            const percent = (active / total) * 100;
+            const percent = (active / total) * 100; // calculate percentage of performed habbits
             setDailySuccessData([percent, 100 - percent]);
           }
         })
@@ -105,16 +106,16 @@ const Dashboard = ({ isDarkMode }) => {
               }
             }
             const habitsData = await habitsResponse.json();
-  
+
             const habits = habitsData.habits;
             const keys = Object.keys(habits);
-            const total = keys.length;
-            let active = 0;
-            const today = new Date().toISOString().split("T")[0];
+            const total = keys.length; // total number of habits
+            let active = 0; // actual preformed habbits
+            const today = new Date().toISOString().split("T")[0]; //get todays date using correct format
             keys.forEach((key) => {
-              if (habits[key].events.includes(today)) active++;
+              if (habits[key].events.includes(today)) active++; // count if habbit preformed today
             });
-            const percent = (active / total) * 100;
+            const percent = (active / total) * 100; // calculate percentage of performed habbits
             tempData.push({ name: personalData.name, percentage: percent });
           } catch (error) {
             console.error(`Error fetching data for friend ID: ${friend}`, error);
@@ -138,7 +139,7 @@ const Dashboard = ({ isDarkMode }) => {
   }, [userData]);
   
 
-  useEffect(() => {
+  useEffect(() => { // only fetch user data on page load
     fetchUserData();
   }, []);
 
