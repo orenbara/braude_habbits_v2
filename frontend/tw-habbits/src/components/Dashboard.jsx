@@ -47,19 +47,9 @@ const Dashboard = ({ isDarkMode }) => {
         )}`
       )
         .then((response) => {
-          console.log(response)
-          console.log("waweasfdaslkdaslkdjasldkjasdlkj")
-          if (!response.ok) {
-            if (response.status == 404) {
-              setDailySuccessData(0);
-              return null;
-              
-            } else {
-              throw new Error("Failed to fetch user habits");
-            }
-          }
-          
+          if (response.ok) {
           return response.json();
+          } else throw new Error("Failed");
         })
         .then((data) => {
           if (data) {
@@ -72,7 +62,8 @@ const Dashboard = ({ isDarkMode }) => {
               if (habits[key].events.includes(today)) active++; // count if habbit preformed today
             });
             const percent = (active / total) * 100; // calculate percentage of performed habbits
-            setDailySuccessData([percent, 100 - percent]);
+            if (total > 0) setDailySuccessData([percent, 100 - percent]);
+            else setDailySuccessData(0);
           }
         })
         .catch((error) => {
@@ -172,7 +163,7 @@ const Dashboard = ({ isDarkMode }) => {
             {competitionData.name.length > 0 ? (
               <BarChart data={competitionData} width={800} height={400} />
             ) : (
-              <p className="dark: text-white">
+              <p className="text-black dark:text-white">
                 You are not connected to any friends yet!
                 <br />
                 Please contact the dev team to connect to your friends!
@@ -186,7 +177,7 @@ const Dashboard = ({ isDarkMode }) => {
             {dailySuccessData != 0 ? (
               <PieChart data={dailySuccessData} isDarkMode={isDarkMode} />
             ) : (
-              <p className="dark: text-white">
+              <p className="text-black dark:text-white">
                 You don't have any habits yet!
                 <br />
                 Please add habits on the habits page.
