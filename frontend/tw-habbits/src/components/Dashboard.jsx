@@ -168,7 +168,7 @@ const Dashboard = ({ isDarkMode }) => {
             {competitionData.name.length > 0 ? (
               <BarChart data={competitionData} width={800} height={400} />
             ) : (
-              <p>
+              <p className="dark: text-white">
                 You are not connected to any friends yet!
                 <br />
                 Please contact the dev team to connect to your friends!
@@ -179,10 +179,10 @@ const Dashboard = ({ isDarkMode }) => {
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               Daily Success Rate
             </h3>
-            {dailySuccessData !== 0 ? (
+            {dailySuccessData != 0 ? (
               <PieChart data={dailySuccessData} isDarkMode={isDarkMode} />
             ) : (
-              <p>
+              <p className="dark: text-white">
                 You don't have any habits yet!
                 <br />
                 Please add habits on the habits page.
