@@ -1,25 +1,35 @@
 import React, { useMemo, useState } from "react";
 import HabitDay from "./HabitDay.jsx";
 
+// Array of day headers representing the days of the week
 const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+// Function to initialize the 'active' status of days based on provided events
 const initActive = (events, days) => {
+
     if (!events) {
         return Array(days.length).fill(false);
     } else {
         const curr = new Date();
         const firstDayAtWeek = curr.getDate() - curr.getDay();
+
+        // Generate an array of dates representing the current week
         const weekDates = days.map((_, index) => {
             const date = new Date(curr.setDate(firstDayAtWeek + index));
             return date.toISOString().split('T')[0]; // Format the date as YYYY-MM-DD
         });
+
+        // Return an array indicating which dates have events (active days)
         return weekDates.map(date => events.includes(date));
     }
 };
 
+// Component representing an individual habit item in the list
 const HabitListItem = ({ title, color, events, onDelete }) => {
     const curr = new Date();
     const firstDayAtWeek = curr.getDate() - curr.getDay();
+
+    // Memoize the array of day objects, each containing the day's title and date
     const days = useMemo(
         () =>
             dayHeaders.map((day, index) => {
@@ -34,8 +44,11 @@ const HabitListItem = ({ title, color, events, onDelete }) => {
         [firstDayAtWeek]
     );
 
+
+    // State to track the 'active' status of each day for this habit
     const [activeDay, setActiveDay] = useState(initActive(events, days));
 
+     // Function to toggle the 'active' status of a day and update the database
     const switchActive = (index) => {
         const current = [...activeDay];
         current[index] = !current[index];
@@ -44,6 +57,7 @@ const HabitListItem = ({ title, color, events, onDelete }) => {
         const eventStatus = current[index] ? 'add' : 'remove';
         const date = new Date(curr.setDate(curr.getDate() - curr.getDay() + index)).toISOString().split('T')[0];
 
+        // If a day is activated, add the event to the database
         if (eventStatus === 'add') {
             fetch(`https://braude-habbits-v2-hksm.vercel.app/add_event_to_habit?id=${localStorage.getItem("userID")}&habitName=${title}&habitEvent=${date}`)
             .then(response => {
@@ -55,6 +69,8 @@ const HabitListItem = ({ title, color, events, onDelete }) => {
             .catch(error => {
                 console.error('Error updating event:', error);
             });
+
+        // If a day is deactivated, remove the event from the database
         } else if (eventStatus === 'remove') {
             fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_event_from_habit?id=${localStorage.getItem("userID")}&habitName=${title}&eventDate=${date}`)
             .then(response => {
@@ -69,6 +85,7 @@ const HabitListItem = ({ title, color, events, onDelete }) => {
         }
     };
 
+    // Calculate the number of days the habit was active in the week
     const timesAWeek = activeDay.filter((active) => active).length;
 
     return (

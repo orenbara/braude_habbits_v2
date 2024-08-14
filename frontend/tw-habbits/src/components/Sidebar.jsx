@@ -1,6 +1,14 @@
+/* 
+  Sidebar Component
+  This component renders a sidebar menu with navigation options.
+  It can be toggled open or closed on smaller screens, 
+  and remains open by default on larger screens.
+*/
+
 import React, { useState } from "react";
 
 const Sidebar = ({ setCurrentView }) => {
+  // State to control whether the sidebar is open or closed
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -9,6 +17,7 @@ const Sidebar = ({ setCurrentView }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden fixed left-0 top-0 m-5 z-20"
       >
+        {/* Humburger menu button */}
         <svg
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
             className={`bi bi-list ${isOpen ? 'text-white' : 'text-black dark:text-white'}`}
@@ -23,6 +32,11 @@ const Sidebar = ({ setCurrentView }) => {
         } md:relative md:translate-x-0 transition duration-200 ease-in-out z-10`}
       >
         <nav>
+          {/* 
+            Navigation Links
+            These buttons allow the user to navigate between different views.
+            The setCurrentView function is called with the appropriate view name when a button is clicked.
+          */}
           <button
             onClick={() => setCurrentView("Dashboard")}
             className="block my-4 py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
@@ -41,7 +55,6 @@ const Sidebar = ({ setCurrentView }) => {
           >
             Add Habit
           </button>
-          {/* Add more buttons for other menu options */}
         </nav>
       </div>
     </>

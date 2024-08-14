@@ -1,3 +1,9 @@
+/* 
+  DashboardIntro Component
+  This component displays an introductory section on the dashboard.
+  The section includes an icon, a heading, and a brief motivational message.
+*/
+
 import React from 'react';
 
 const DashboardIntro = () => {

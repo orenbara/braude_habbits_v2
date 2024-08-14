@@ -3,7 +3,10 @@ import HabitListItem from "./HabitListItem.jsx";
 import Modal from "./Modal.jsx";
 
 const HabitList = () => {
+    // State to control the modal visibility
     const [modalOpen, setModalOpen] = useState(false);
+
+    // State to hold the list of habits
     const [habitList, setHabitList] = useState([]);
 
     const fetchHabits = () => {
@@ -16,7 +19,10 @@ const HabitList = () => {
                 }
             })
             .then(data => {
+                // Check if habits exist in the response
                 if (data.habits && Object.keys(data.habits).length > 0) {
+
+                    // Map the habits data to the format used in the habit list
                     const newHabitList = Object.keys(data.habits).map((habitName, index) => ({
                         key: index + 1,
                         title: data.habits[habitName].name,
@@ -25,6 +31,7 @@ const HabitList = () => {
                     }));
                     setHabitList(newHabitList);
                 } else {
+                    // Clear the habit list if no habits are found
                     setHabitList([]);
                     console.log("No habits found in the database");
                 }
@@ -34,22 +41,26 @@ const HabitList = () => {
             });
     };
 
+    // useEffect hook to fetch habits when the component mounts
     useEffect(() => {
         fetchHabits();
     }, []);
 
+    // Function to handle the submission of a new habit
     const handleHabitSubmit = (newHabit) => {
         setHabitList([...habitList, newHabit]);
         setModalOpen(false);
         fetchHabits();
     };
 
+    // Function to handle deleting a habit by index
     const handleDeleteHabit = (index) => {
         const habitToDelete = habitList[index].title;  // Get the habit name from the habitList
     
         const updatedHabitList = habitList.filter((_, i) => i !== index);
         setHabitList(updatedHabitList);
-    
+        
+        // Send a request to delete the habit from the server
         fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_habit?id=${localStorage.getItem("userID")}&habitName=${habitToDelete}`)
             .then(response => {
                 if (!response.ok) {

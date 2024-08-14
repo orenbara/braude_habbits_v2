@@ -1,4 +1,6 @@
 import React from 'react';
+
+// Define the HabitDay component that represents a single day in a habit tracker
 const HabitDay = ({day, color, active,switchActive}) => {
 
     return (

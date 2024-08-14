@@ -1,3 +1,9 @@
+/* 
+  Calendar Component
+  This component is responsible for displaying a monthly calendar grid.
+  It marks days that have events and allows users to toggle event status on days.
+*/
+
 import React, { useState, useEffect } from 'react';
 
 const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, events, color, title }) => {
@@ -22,9 +28,11 @@ const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, event
     updateMarkedDays();
   }, [events, currentMonth]); // Include all relevant dependencies
 
+  // Function to handle toggling of event marking on a specific day
   const switchActive = (index, isMarked) => {
     const date = new Date(currentYear, currentMonth.getMonth(), index+1).toISOString().split('T')[0];
     
+    // If the day is not marked, add the event to the database
     if (!isMarked) {
       fetch(`https://braude-habbits-v2-hksm.vercel.app/add_event_to_habit?id=${id}&habitName=${title}&habitEvent=${date}`)
         .then(response => {
@@ -33,6 +41,7 @@ const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, event
         })
         .catch(error => console.error('Error updating event:', error));
     } else {
+      // If the day is already marked, remove the event from the database
       fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_event_from_habit?id=${id}&habitName=${title}&eventDate=${date}`)
         .then(response => {
           if (!response.ok) throw new Error('Failed to delete event');
@@ -40,25 +49,28 @@ const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, event
         })
         .catch(error => console.error('Error deleting event:', error));
     }
-
+    // Update local state to reflect the change in marking
     setMarkedDays(prevMarkedDays => ({
       ...prevMarkedDays,
       [index]: !isMarked
     }));
-
+    // Add the event date to the events array
     events.push(date);
-
+    // Trigger the onDayClick callback with the updated events array
     onDayClick(events);
   };
 
   return (
     <div className="grid grid-cols-7 gap-2 p-8 dark:bg-slate-800 rounded">
+      {/* Render the days of the week */}
       {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
         <div key={day} className="text-center text-gray-600 dark:text-white text-xl">{day}</div>
       ))}
+      {/* Render empty cells for the days before the first day of the month */}
       {[...Array(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay()).keys()].map(i => (
         <div key={`empty-${i}`} className="h-8"></div>
       ))}
+      {/* Render the days of the current month */}
       {[...Array(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate()).keys()].map(day => {
         const dayOfMonth = day + 1;
         const isMarked = !!markedDays[dayOfMonth];

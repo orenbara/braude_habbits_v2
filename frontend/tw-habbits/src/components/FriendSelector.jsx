@@ -26,5 +26,3 @@ const FriendSelector = ({ friends, selectedFriend, onSelectFriend }) => (
 );
 
 export default FriendSelector;
-
-

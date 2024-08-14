@@ -1,21 +1,43 @@
+/* 
+  HabitTracker Component
+  This component handles fetching user and friend data, selecting habits, 
+  navigating months, and toggling event status on calendar days.
+*/
+
 import React, { useState, useEffect } from 'react';
 import MonthNavigator from './MonthNavigator.jsx';
 import Calendar from './Calendar.jsx';
 import FriendSelector from './FriendSelector.jsx';
 
 const HabitTracker = () => {
+  // State to manage user's habits
   const [habitList, setHabitList] = useState([]);
-  const [selectedFriendHabitList, setSelectedFriendHabitList] = useState([]);
-  const [friendsList, setFriendsList] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedFriend, setSelectedFriend] = useState(null);
-  const [userID] = useState(localStorage.getItem("userID"));
-  const [friendID, setFriendID] = useState({});
-  const [selectedHabit, setSelectedHabit] = useState({ title: 'Choose a habit' });
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  //const [datesArr, setDatesArr] = useState(getDatesArr(currentMonth.getFullYear(), currentMonth.getMonth()))
 
-  // Fetch user's habits
+  // State to manage selected friend's habits
+  const [selectedFriendHabitList, setSelectedFriendHabitList] = useState([]);
+
+  // State to manage the list of friends
+  const [friendsList, setFriendsList] = useState([]);
+
+  // State to manage the current month being displayed in the calendar
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // State to manage the selected friend
+  const [selectedFriend, setSelectedFriend] = useState(null);
+
+  // Get the user ID from local storage
+  const [userID] = useState(localStorage.getItem("userID"));
+  
+  // State to manage the friend ID (though it seems unused in this context)
+  const [friendID, setFriendID] = useState({});
+
+  // State to manage the selected habit
+  const [selectedHabit, setSelectedHabit] = useState({ title: 'Choose a habit' });
+
+  // State to manage the dropdown's open/closed status
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Fetch user's habits from the backend
   const fetchHabits = (id) => {
     fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${id}`)
       .then(response => {
@@ -33,14 +55,14 @@ const HabitTracker = () => {
             color: data.habits[habitName].color,
             events: data.habits[habitName].events
           }));
+          // Update the habit list based on whether it's for the current user or a friend
           if(id === localStorage.getItem("userID")) {
             setHabitList(newHabitList);
           } else {
-            //console.log("Friends's fetch", newHabitList)
             setSelectedFriendHabitList(newHabitList);
           }
-          
         } else {
+          // If no habits are found, clear the habit list
           if(id === localStorage.getItem("userID")) {
             setHabitList([]);
           } else {
@@ -54,7 +76,7 @@ const HabitTracker = () => {
       });
   };
 
-  // Fetch user's friends
+  // Fetch user's friends from the backend
   const fetchFriends = () => {
     fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${localStorage.getItem("userID")}`)
     .then(response => {
@@ -65,19 +87,9 @@ const HabitTracker = () => {
       }
     })
     .then(data => {
-      // Assuming data.friends is an array of friend objects
-      //console.log("Friends data = ", data)
-      //console.log("Friends data.friends = ", data.friends)
-      
       if (data && data.friends && Array.isArray(data.friends)) {
-        //let index = 0;
-
         const newFriendsList = [];
-        /*data.friends.map((friendName, index) => ({
-          id: index + 1, 
-          name: friendName
-        }));*/
-
+        // Fetch each friend's data by ID
         data.friends.forEach((friendID, index) => {
           fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${friendID}`)
           .then(response => {
@@ -89,8 +101,6 @@ const HabitTracker = () => {
           })
           .then(data2 => {
             if (data2) {
-              //console.log("see friendID = ", friendID)
-              //console.log("string = ", typeof friendID)
               const friend = {
                 id: friendID,
                 name: data2.name + " " + data2.surname
@@ -105,7 +115,7 @@ const HabitTracker = () => {
 
         });
   
-        //console.log("NewFriendsList = ", newFriendsList)
+        // Update the friends list state
         setFriendsList(newFriendsList);
       } else {
         setFriendsList([]);
@@ -118,7 +128,6 @@ const HabitTracker = () => {
   }
 
   useEffect(() => {
-    //console.log("I an in use effect selectedFriendHabitList: ", selectedFriendHabitList)
   }, [selectedFriendHabitList]);
 
   useEffect(() => {
@@ -128,28 +137,28 @@ const HabitTracker = () => {
 
   useEffect(() => {
     if (selectedFriend?.id) {
-      //console.log(" I am in the if in use effect!")
       fetchHabits(selectedFriend.id);
     }
   }, [selectedFriend]);
 
 
+  // Move to the previous month
   const prevMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-    //setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1))
   };
 
+  // Move to the next month
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-    //setDatesArr(getDatesArr(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1))
   };
 
+  // Update the events in the selected habit list
   const toggleDayStatus = (updatedList) => {
     habitList.events = updatedList;
     setHabitList(habitList);
-
   };
 
+  // Handle habit selection from the dropdown
   const handleHabitSelect = (habit) => {
     setSelectedHabit(habit);
     setIsDropdownOpen(false);
@@ -181,12 +190,14 @@ const HabitTracker = () => {
           </div>
         </div>
 
+        {/* Month navigation */}
         <MonthNavigator currentMonth={currentMonth} prevMonth={prevMonth} nextMonth={nextMonth} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
           <div>
             <h4 className="text-xl font-semibold mb-4 dark:text-white">Your Calendar</h4>
             <div className="max-w-md mx-auto">
+              {/*User's calendar*/}
               <Calendar
                 currentMonth={currentMonth}
                 currentYear={currentMonth.getFullYear()}
@@ -200,13 +211,14 @@ const HabitTracker = () => {
             </div>
           </div>
 
+          {/* Friend's calendar section */}
           <div>
             <FriendSelector
               friends={friendsList}
               selectedFriend={selectedFriend}
               onSelectFriend={setSelectedFriend}
             />
-
+      {/* Display friend's calendar if a friend is selected */}
       {selectedFriend && selectedFriendHabitList.length > 0 && (
         <div className="mt-8">
           <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
@@ -233,11 +245,6 @@ const HabitTracker = () => {
           </div>
         </div>
       )}
-
-
-
-
-
           </div>
         </div>
       </div>

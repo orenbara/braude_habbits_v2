@@ -11,42 +11,27 @@ const LoginPage = ({ onLogin, setIsDarkMode, isDarkMode }) => {
   const [password, setPassword] = useState("");
   const [userID, setUserID] = useState(false);
 
+
   const toggleDarkMode = (isDarkMode) => {
     localStorage.setItem("isDarkMode", isDarkMode);
     setIsDarkMode(isDarkMode);
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   const response = await fetch('http://localhost:3001/login', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ email: username, password }),    });
-
-  //   if (response.ok) {
-  //     onLogin();
-  //   } else {
-  //     console.error('Login failed');
-  //   }
-  // };
-
+  // Handle form submission for logging in
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(username)
     console.log(password)
+
+    // Sign in using Firebase authentication
     signInWithEmailAndPassword(auth, username, password)
     .then((userCredential) => {
-      // Signed in 
       const user = userCredential.user;
       setUserID(user.uid);
       localStorage.setItem("userID", user.uid);
       console.log("SUCCESS!!!!!!!!!")
       console.log(user)
       onLogin();
-      // ...
     })
     .catch((error) => {
       console.log("FAIL!!!!!!!!!")
