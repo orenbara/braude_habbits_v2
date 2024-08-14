@@ -1,8 +1,3 @@
-/*
-Dashboard component
-It displays a personalized user progress using different charts.
-*/
-
 import React, { useState, useEffect } from "react";
 import PieChart from "./PieChart";
 import BarChart from "./BarChart";
@@ -10,141 +5,149 @@ import DashboardIntro from "./DashboardIntro";
 
 const Dashboard = ({ isDarkMode }) => {
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const [error, setError] = useState(null); // State to handle errors
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [competitionData, setCompetitionData] = useState({
     name: [],
     percentage: [],
   });
-  const [dailySuccessData, setDailySuccessData] = useState(null); // State to handle daily success
+  const [dailySuccessData, setDailySuccessData] = useState(null);
 
   // Fetch user data
-  const fetchUserData = async () => {
-    try {
-      setLoading(true);
-      console.log(localStorage.getItem("userID"));
-      const response = await fetch(
-        `https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${localStorage.getItem(
-          "userID"
-        )}`
-      );
-      if (response.ok) {
-        const data = await response.json();
+  const fetchUserData = () => {
+    setLoading(true);
+    fetch(
+      `https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${localStorage.getItem(
+        "userID"
+      )}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        return response.json();
+      })
+      .then((data) => {
         setUserData(data);
-      } else {
-        throw new Error("Failed to fetch user data");
-      }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
-    const calcpercentage = async () => {
-      // console.log("trying to calc");
-      try {
-        const response = await fetch(
-          `https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${localStorage.getItem(
-            "userID"
-          )}`
-        );
-        if (response.ok) {
-          // console.log("response ok");
-          const data = await response.json();
-          const habits = data.habits;
-          const keys = Object.keys(habits);
-          const total = keys.length;
-          let active = 0;
-          const today = new Date().toISOString().split("T")[0];
-          // console.log("today: " + today);
-          keys.forEach((key) => {
-            // console.log(habits[key].events);
-            if (habits[key].events.includes(today)) active++;
-          });
-          const percent = (active / total) * 100;
-          // console.log(percent);
-          setDailySuccessData([percent, 100 - percent]);
-        } else {
-          if (response.status == 404) {
-            setDailySuccessData(0);
-            console.log(dailySuccessData);
-          } else throw new Error("failedddd");
-        }
-      } catch (error) {
-        setError(error.message);
-      }
+    const calcPercentage = () => {
+      fetch(
+        `https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${localStorage.getItem(
+          "userID"
+        )}`
+      )
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 404) {
+              setDailySuccessData(0);
+              return null;
+            } else {
+              throw new Error("Failed to fetch user habits");
+            }
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data) {
+            const habits = data.habits;
+            const keys = Object.keys(habits);
+            const total = keys.length;
+            let active = 0;
+            const today = new Date().toISOString().split("T")[0];
+            keys.forEach((key) => {
+              if (habits[key].events.includes(today)) active++;
+            });
+            const percent = (active / total) * 100;
+            setDailySuccessData([percent, 100 - percent]);
+          }
+        })
+        .catch((error) => {
+          setError(error.message);
+        });
     };
-    calcpercentage();
+
+    calcPercentage();
   }, [userData]);
 
   useEffect(() => {
     if (userData) {
-      const friends_percents = async () => {
-        console.log(userData.friends);
-        const names = [];
-        const percent = [];
-        userData.friends.forEach(async (friend) => {
+      const friendsPercents = () => {
+        const tempData = [];
+  
+        const fetchFriendData = async (friend) => {
           try {
-            const response = await fetch(
+            const personalResponse = await fetch(
               `https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${friend}`
             );
-            if (response.ok) {
-              const data = await response.json();
-              if (!names.includes(data.name)) names.push(data.name);
-            } else {
-              throw new Error("Failed to fetch");
+            if (!personalResponse.ok) {
+              throw new Error(`Failed to fetch personal data for friend ID: ${friend}`);
             }
-          } catch (error) {
-            console.log(error.message);
-          }
-          try {
-            const response = await fetch(
+            const personalData = await personalResponse.json();
+  
+            const habitsResponse = await fetch(
               `https://braude-habbits-v2-hksm.vercel.app/get_user_habits?id=${friend}`
             );
-            if (response.ok) {
-              const data = await response.json();
-              const habits = data.habits;
-              const keys = Object.keys(habits);
-              const total = keys.length;
-              let active = 0;
-              const today = new Date().toISOString().split("T")[0];
-              keys.forEach((key) => {
-                if (habits[key].events.includes(today)) active++;
-              });
-              percent.push((active / total) * 100);
-            } else if (response.status == 404) {
-              percent.push(0);
-            } else {
-              throw new Error("Failed to fetch");
+            if (!habitsResponse.ok) {
+              if (habitsResponse.status === 404) {
+                tempData.push({ name: personalData.name, percentage: 0 });
+                return;
+              } else {
+                throw new Error(`Failed to fetch habits for friend ID: ${friend}`);
+              }
             }
+            const habitsData = await habitsResponse.json();
+  
+            const habits = habitsData.habits;
+            const keys = Object.keys(habits);
+            const total = keys.length;
+            let active = 0;
+            const today = new Date().toISOString().split("T")[0];
+            keys.forEach((key) => {
+              if (habits[key].events.includes(today)) active++;
+            });
+            const percent = (active / total) * 100;
+            tempData.push({ name: personalData.name, percentage: percent });
           } catch (error) {
-            console.log(error.message);
+            console.error(`Error fetching data for friend ID: ${friend}`, error);
           }
-          if (names.length > 0 && percent.length > 0) {
-            setCompetitionData({ name: names, percentage: percent });
-            console.log(competitionData);
-          }
-        });
+        };
+  
+        const fetchAllFriendsData = async () => {
+          await Promise.all(userData.friends.map(fetchFriendData));
+          // Sort tempData based on the friend ID to maintain consistent order
+          tempData.sort((a, b) => a.name.localeCompare(b.name));
+          const names = tempData.map((entry) => entry.name);
+          const percentages = tempData.map((entry) => entry.percentage);
+          setCompetitionData({ name: names, percentage: percentages });
+        };
+  
+        fetchAllFriendsData();
       };
-      friends_percents();
+  
+      friendsPercents();
     }
   }, [userData]);
+  
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
-  // Sample data for the pie chart
-  // const dailySuccessData = [80, 20]; // 80% success, 20% failure
-
   if (loading) {
-    return <p>Loading...</p>; // Display loading state
+    return <p>Loading...</p>;
   }
 
   if (error) {
-    return <p>Error: {error}</p>; // Display error state
+    return <p>Error: {error}</p>;
   }
 
   return (
@@ -165,8 +168,9 @@ const Dashboard = ({ isDarkMode }) => {
               <BarChart data={competitionData} width={800} height={400} />
             ) : (
               <p>
-                you are not connected to any friends yet!<br />please contact the
-                dev team to connect to your friends!
+                You are not connected to any friends yet!
+                <br />
+                Please contact the dev team to connect to your friends!
               </p>
             )}
           </div>
@@ -174,12 +178,13 @@ const Dashboard = ({ isDarkMode }) => {
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               Daily Success Rate
             </h3>
-            {dailySuccessData != 0 ? (
+            {dailySuccessData !== 0 ? (
               <PieChart data={dailySuccessData} isDarkMode={isDarkMode} />
             ) : (
               <p>
-                you dont have any habits yet!<br />please add habits in the habits
-                page
+                You don't have any habits yet!
+                <br />
+                Please add habits on the habits page.
               </p>
             )}
           </div>
