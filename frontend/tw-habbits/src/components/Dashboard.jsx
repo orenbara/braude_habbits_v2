@@ -47,14 +47,18 @@ const Dashboard = ({ isDarkMode }) => {
         )}`
       )
         .then((response) => {
+          console.log(response)
+          console.log("waweasfdaslkdaslkdjasldkjasdlkj")
           if (!response.ok) {
-            if (response.status === 404) {
+            if (response.status == 404) {
               setDailySuccessData(0);
               return null;
+              
             } else {
               throw new Error("Failed to fetch user habits");
             }
           }
+          
           return response.json();
         })
         .then((data) => {

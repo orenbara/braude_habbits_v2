@@ -218,7 +218,7 @@ const HabitTracker = () => {
               onSelectFriend={setSelectedFriend}
             />
       {/* Display friend's calendar if a friend is selected */}
-      {selectedFriend && selectedFriendHabitList.length > 0 && (
+      {selectedFriend && selectedFriendHabitList.length >= 0 && (
         <div className="mt-8">
           <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
           <div className="max-w-md mx-auto">
