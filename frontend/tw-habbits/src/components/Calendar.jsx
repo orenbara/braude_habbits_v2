@@ -40,6 +40,8 @@ const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, event
           console.log("Added event to DB");
         })
         .catch(error => console.error('Error updating event:', error));
+      // Add the event date to the events array
+      events.push(date);
     } else {
       // If the day is already marked, remove the event from the database
       fetch(`https://braude-habbits-v2-hksm.vercel.app/delete_event_from_habit?id=${id}&habitName=${title}&eventDate=${date}`)
@@ -48,14 +50,15 @@ const Calendar = ({ currentMonth, currentYear, id, isEditable, onDayClick, event
           console.log("Deleted event from DB");
         })
         .catch(error => console.error('Error deleting event:', error));
+      // Delete the event date from the events array
+      events.pop(date);
     }
     // Update local state to reflect the change in marking
     setMarkedDays(prevMarkedDays => ({
       ...prevMarkedDays,
       [index]: !isMarked
     }));
-    // Add the event date to the events array
-    events.push(date);
+
     // Trigger the onDayClick callback with the updated events array
     onDayClick(events);
   };
