@@ -33,13 +33,13 @@ const Sidebar = ({ setCurrentView }) => {
             onClick={() => setCurrentView("Habits")}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
           >
-            My habits and friends
+            Habit Calendar
           </button>
           <button
             onClick={() => setCurrentView("HabitList")}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
           >
-            Habits
+            Add Habit
           </button>
           {/* Add more buttons for other menu options */}
         </nav>
