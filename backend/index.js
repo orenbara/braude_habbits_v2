@@ -36,7 +36,7 @@ app.get('/add_user', async (req, res) => {
       surname: surname,
       friends: []
     });
-    res.send(`${name} ${surname} added to Firestore`);
+    res.json({ success: true, message: "User added successfully" });
   } catch (error) {
     console.error(`Error adding ${name} ${surname}: `, error);
     res.status(500).send('Error adding user');
