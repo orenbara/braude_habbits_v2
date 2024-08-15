@@ -22,36 +22,24 @@ app.get('/backend_db_test', async (req, res) => {
 });
 
 // Adding users manually - change if needed!
+// Adding users manually - change if needed!
 app.get('/add_user', async (req, res) => {
-  console.log('I am in add_person');
+  console.log('I am in add_user');
+  const { id, name, surname } = req.query;
+  if (!id || !name || !surname) {
+    return res.status(400).send('ID, name, and surname are required');
+  }
   try {
-    /*const peopleRef = db.collection('users').doc('337889133');
-    await peopleRef.set({
-      name: "Anna",
-      surname: "Garmash",
-      friends: ["311170450", "319003943"]
-    });
-    const peopleRef2 = db.collection('users').doc('311170450');
-    await peopleRef2.set({
-      name: "Oren",
-      surname: "Baranovsky",
-      friends: ["337889125", "319003943","211567342"]
-    });
-    const peopleRef3 = db.collection('users').doc('319003943');
-    await peopleRef3.set({
-      name: "Lior",
-      surname: "Panikashvili",
-      friends: ["337889125", "311170450","211567342"]
-    });*/
-    const peopleRef4 = db.collection('users').doc('333333333');
+    const peopleRef4 = db.collection('users').doc(id);
     await peopleRef4.set({
-      name: "Kate",
-      surname: "Garmash",
-      friends: ["1111", "111"]
+      name: name,
+      surname: surname,
+      friends: []
     });
-    res.send('Person added to Firestore');
-  }catch (error) {
-    console.error("Error adding person: ", error);
+    res.send(`${name} ${surname} added to Firestore`);
+  } catch (error) {
+    console.error(`Error adding ${name} ${surname}: `, error);
+    res.status(500).send('Error adding user');
   }
 });
 
