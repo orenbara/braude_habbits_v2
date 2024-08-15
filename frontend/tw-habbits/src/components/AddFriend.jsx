@@ -88,10 +88,12 @@ const AddFriend = () => {
     }
   };
 
-  const filteredFriends = friendsList.filter(friend =>
-    friend.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    friend.surname.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredFriends = friendsList
+    .filter(friend => friend.id !== localStorage.getItem("userID")) // Exclude current user
+    .filter(friend =>
+      friend.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      friend.surname.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <div className="max-w-md mx-auto p-4">
