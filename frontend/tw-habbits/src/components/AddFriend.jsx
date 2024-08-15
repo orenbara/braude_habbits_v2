@@ -8,14 +8,14 @@ const AddFriend = () => {
   // Fetch user's friends from the backend
   const fetchFriends = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/get_user_personal_data?id=${localStorage.getItem("userID")}`);
+      const response = await fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${localStorage.getItem("userID")}`);
       if (!response.ok) throw new Error('Failed to fetch user friends');
   
       const data = await response.json();
       
       if (data && data.friends && Array.isArray(data.friends)) {
         const newFriendsList = await Promise.all(data.friends.map(async (friendID) => {
-          const friendResponse = await fetch(`http://localhost:3000/get_user_personal_data?id=${friendID}`);
+          const friendResponse = await fetch(`https://braude-habbits-v2-hksm.vercel.app/get_user_personal_data?id=${friendID}`);
           if (!friendResponse.ok) throw new Error('Failed to fetch user friend details');
   
           const friendData = await friendResponse.json();
@@ -38,7 +38,7 @@ const AddFriend = () => {
   // Fetch all users from the backend
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/get_all_users`);
+      const response = await fetch(`https://braude-habbits-v2-hksm.vercel.app/get_all_users`);
       if (!response.ok) throw new Error('Failed to get all users data');
 
       const data = await response.json();
@@ -72,12 +72,12 @@ const AddFriend = () => {
     try {
       if (myFriends.some(f => f.id === friend.id)) {
         // Remove friend from friendsList
-        await fetch(`http://localhost:3000/remove_friend?userId=${localStorage.getItem("userID")}&friendId=${friend.id}`);
+        await fetch(`https://braude-habbits-v2-hksm.vercel.app/remove_friend?userId=${localStorage.getItem("userID")}&friendId=${friend.id}`);
         console.log("Friend removed from DB");
         setMyFriends(prevFriends => prevFriends.filter(f => f.id !== friend.id));
       } else {
         // Add friend to friendsList
-        await fetch(`http://localhost:3000/add_friend?userId=${localStorage.getItem("userID")}&friendId=${friend.id}`);
+        await fetch(`https://braude-habbits-v2-hksm.vercel.app/add_friend?userId=${localStorage.getItem("userID")}&friendId=${friend.id}`);
         console.log("Friend added to DB");
         setMyFriends(prevFriends => [...prevFriends, friend]);
       }
