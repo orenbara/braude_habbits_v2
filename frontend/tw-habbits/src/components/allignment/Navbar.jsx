@@ -5,7 +5,7 @@ It includes the application title, dark mode toggle, and logout button.
 */
 
 import React from "react";
-import DarkModeToggle from "./DarkModeToggle";
+import DarkModeToggle from "../DarkModeToggle";
 
 const Navbar = ({ toggleDarkMode, isDarkMode, onLogout }) => {
   return (

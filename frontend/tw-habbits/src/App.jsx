@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Dashboard from "./components/Dashboard";
-import HabitTracker from "./components/HabitTracker.jsx";
-import HabitList from "./components/HabitList.jsx";
+import Navbar from "./components/allignment/Navbar";
+import Sidebar from "./components/allignment/Sidebar";
+import Dashboard from "./components/dashboard/Dashboard.jsx";
+import HabitTracker from "./components/addhabitcalendar/HabitTracker.jsx";
+import HabitList from "./components/addhabit/HabitList.jsx";
 import LoginPage from "./components/LoginPage.jsx";
-import AddFriend from "./components/AddFriend.jsx";
+import AddFriend from "./components/addfriend/AddFriend.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
