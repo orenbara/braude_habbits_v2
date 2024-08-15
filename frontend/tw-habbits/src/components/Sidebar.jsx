@@ -55,6 +55,12 @@ const Sidebar = ({ setCurrentView }) => {
           >
             Add Habit
           </button>
+          <button
+            onClick={() => setCurrentView("AddFriend")}
+            className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+          >
+            Add Friend
+          </button>
         </nav>
       </div>
     </>

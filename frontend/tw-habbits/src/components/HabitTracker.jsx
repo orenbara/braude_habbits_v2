@@ -222,9 +222,9 @@ const HabitTracker = () => {
         <div className="mt-8">
           <h4 className="text-xl font-semibold mb-4 dark:text-white">{selectedFriend.name}'s Calendar</h4>
           <div className="max-w-md mx-auto">
-            {selectedFriendHabitList.some(habit => habit.title === selectedHabit.title) ? (
+            {selectedFriendHabitList.some(habit => habit.title == selectedHabit.title) ? (
               selectedFriendHabitList
-                .filter(habit => habit.title === selectedHabit.title)
+                .filter(habit => habit.title == selectedHabit.title)
                 .map((habit) => (
                   <Calendar
                     key={habit.title} // Use a unique key

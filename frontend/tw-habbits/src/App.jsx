@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard";
 import HabitTracker from "./components/HabitTracker.jsx";
 import HabitList from "./components/HabitList.jsx";
 import LoginPage from "./components/LoginPage.jsx";
+import AddFriend from "./components/AddFriend.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -51,6 +52,8 @@ const App = () => {
         return <HabitTracker />;
       case "HabitList":
         return <HabitList />;
+      case "AddFriend":
+        return <AddFriend/>;
       default:
         return <Dashboard />;
     }

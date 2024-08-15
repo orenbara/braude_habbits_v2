@@ -13,16 +13,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.get('/backend_db_test', async (req, res) => {
-  res.send('HELLO TESTER, CHECK YOUR DB');
-  const peopleRef = db.collection('people').doc('OREN :)')
-  const res2 = await peopleRef.set({
-    ["backend_db_test"]: "Added this value yey!! from vercel!!!"
-  })
-});
-
-// Adding users manually - change if needed!
-// Adding users manually - change if needed!
+// Add user to user collection in the firestore db
 app.get('/add_user', async (req, res) => {
   console.log('I am in add_user');
   const { id, name, surname } = req.query;
@@ -49,9 +40,6 @@ app.get('/add_habit', async (req, res) => {
   console.log('I am in add_habit');
 
   const {id, habitName, color} = req.query;
-  //const id = "337889125";
-  //const habitName = "Climbing";
-
   if (!id || !habitName || !color) {
     return res.status(400).send('ID and habit name are required');
   }
@@ -94,10 +82,6 @@ app.get('/add_event_to_habit', async (req, res) => {
   console.log('I am in add_event');
 
   const { id, habitName, habitEvent } = req.query;
-  //const id = "337889125";
-  //habitName = "Swimming";
-  //habitEvent = "10.08.2024";
-
   if (!id || !habitName || !habitEvent) {
     return res.status(400).send('ID, habit name, and event are required');
   }
@@ -254,7 +238,6 @@ app.get('/get_user_personal_data', async (req, res) => {
 app.get('/get_user_habits', async (req, res) => {
   console.log('I am in get_user_habits');
   const id = req.query.id;
-  //const id = "337889125";
 
   if (!id) {
     return res.status(400).send('User ID is required');
@@ -287,8 +270,6 @@ app.get('/get_specific_habit', async (req, res) => {
   const id = req.query.id;
   const habitName = req.query.habitName;
 
-  //const id = "337889125";
-  //const habitName = "Swimming";
 
   if (!id || !habitName) {
     return res.status(400).send('ID and habit name are required');
@@ -320,7 +301,121 @@ app.get('/get_specific_habit', async (req, res) => {
   }
 });
 
+// Get all users data
+app.get('/get_all_users', async (req, res) => {
+  console.log('I am in get_all_users');
+  
+  try {
+    const usersRef = db.collection('users');
+    const snapshot = await usersRef.get();
+    
+    if (snapshot.empty) {
+      return res.status(404).send('No users found');
+    }
+    
+    const users = [];
+    snapshot.forEach(doc => {
+      users.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    console.log(users);
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users: ", error);
+    res.status(500).send('Error fetching users');
+  }
+});
+
+// Adding a friend to a user's friend list
+// endpoint should get user's id and friend's id
+app.get('/add_friend', async (req, res) => {
+  console.log('I am in add_friend');
+  try {
+    const userId = req.query.userId; // Get the userId from the query parameters
+    const friendId = req.query.friendId; // Get the friendId from the query parameters
+
+    if (!userId || !friendId) {
+      return res.status(400).send('User ID and Friend ID are required.');
+    }
+
+    const userRef = db.collection('users').doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).send('User not found.');
+    }
+
+    // Get the current friends array
+    const userData = userDoc.data();
+    const currentFriends = userData.friends || [];
+
+    // Check if the friendId is already in the list
+    if (currentFriends.includes(friendId)) {
+      return res.status(400).send('Friend already added.');
+    }
+
+    // Add the new friendId to the friends array
+    currentFriends.push(friendId);
+
+    // Update the user's document with the new friends array
+    await userRef.update({ friends: currentFriends });
+
+    res.send('Friend added to Firestore successfully.');
+  } catch (error) {
+    console.error("Error adding friend: ", error);
+    res.status(500).send('Error adding friend to Firestore.');
+  }
+});
+
+// Removing a friend from a user's friend list
+// endpoint should get user's id and friend's id
+app.get('/remove_friend', async (req, res) => {
+  console.log('I am in remove_friend');
+  try {
+    const userId = req.query.userId; // Get the userId from the query parameters
+    const friendId = req.query.friendId; // Get the friendId from the query parameters
+
+    if (!userId || !friendId) {
+      return res.status(400).send('User ID and Friend ID are required.');
+    }
+
+    const userRef = db.collection('users').doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).send('User not found.');
+    }
+
+    // Get the current friends array
+    const userData = userDoc.data();
+    const currentFriends = userData.friends || [];
+
+    // Check if the friendId is in the list
+    if (!currentFriends.includes(friendId)) {
+      return res.status(400).send('Friend not found in list.');
+    }
+
+    // Remove the friendId from the friends array
+    const updatedFriends = currentFriends.filter(id => id !== friendId);
+
+    // Update the user's document with the new friends array
+    await userRef.update({ friends: updatedFriends });
+
+    res.send('Friend removed from Firestore successfully.');
+  } catch (error) {
+    console.error("Error removing friend: ", error);
+    res.status(500).send('Error removing friend from Firestore.');
+  }
+});
+
+
 // Start the Express server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+
